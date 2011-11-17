@@ -51,5 +51,4 @@ object ScotBuild extends Build {
     settings = buildSettings,
     base = file("core")
   )
-
 }

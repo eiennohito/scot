@@ -1,4 +1,4 @@
-package org.eiennohito.yaih.mongo
+package org.eiennohito.scot.mongo
 
 import org.scalatest.BeforeAndAfter
 import net.liftweb.mongodb.{MongoAddress, MongoDB, MongoIdentifier}
