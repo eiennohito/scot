@@ -13,44 +13,31 @@ import common._
 import http._
 import sitemap._
 import Loc._
-import mapper._
-
+import org.eiennohito.scot.db.DbInitializer
+import org.eiennohito.scot.services.InitializationService
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot {
+class Boot extends Bootable {
   def boot {
-//    if (!DB.jndiJdbcConnAvailable_?) {
-//      val vendor =
-//	new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
-//			     Props.get("db.url") openOr
-//			     "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
-//			     Props.get("db.user"), Props.get("db.password"))
-//
-//      LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
-//
-//      DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
-//    }
 
-    // Use Lift's Mapper ORM to populate the database
-    // you don't need to use Mapper to use Lift... use
-    // any ORM you want
-    //Schemifier.schemify(true, Schemifier.infoF _, User)
+    DbInitializer.init()
 
     // where to search snippet
     LiftRules.addToPackages("org.eiennohito.scot.web")
 
     // Build SiteMap
     def sitemap = SiteMap(
-      Menu.i("Home") / "index"
-    )
+      Menu.i("Home") / "index",
+
 
       // more complex because this menu allows anything in the
       // /static path to be visible
-      //Menu(Loc("Static", Link(List("static"), true, "/static/index"),
-//	       "Static Content")))
+      Menu.i("static") / "static" / * >> Hidden,
+      Menu.i("initializer") / "initialize" / net.liftweb.sitemap.* >> Hidden
+    )
 
     //def sitemapMutators = User.sitemapMutator
 
@@ -71,6 +58,9 @@ class Boot {
 
     // Force the request to be UTF-8
     LiftRules.early.append(_.setCharacterEncoding("UTF-8"))
+
+    //LiftRules.dispatch.append(InitializationService.check)
+
 
     // What is the function to test if a user is logged in?
     //LiftRules.loggedInTest = Full(() => User.loggedIn_?)

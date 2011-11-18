@@ -16,7 +16,8 @@ object ScotDependencies {
 		"net.liftweb" %% "lift-mapper" % liftVersion % "compile->default",
 		"net.liftweb" %% "lift-wizard" % liftVersion % "compile->default",
 		"net.liftweb" %% "lift-mongodb-record" % liftVersion,
-		"javax.servlet" % "servlet-api" % "2.5" % "provided->default")
+		"javax.servlet" % "servlet-api" % "2.5" % "provided->default",
+    "ch.qos.logback" % "logback-classic" % "0.9.26" % "compile->default") // Logging
 	}
 
   val rogue = "com.foursquare" %% "rogue" % "1.0.28" intransitive()

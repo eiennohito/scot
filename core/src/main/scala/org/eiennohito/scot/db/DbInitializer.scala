@@ -9,7 +9,7 @@ import net.liftweb.util.Props
  * @since 17.11.11 
  */
 
-object DbInit {
+object DbInitializer {
   def init() {
     val sa = new ServerAddress(Props.get("db.server").get, Props.getInt("db.port", ServerAddress.defaultPort()))
     MongoDB.defineDb(DbId, new Mongo(sa), Props.get("db.name").get)
