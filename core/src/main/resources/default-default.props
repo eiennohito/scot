@@ -1,0 +1,10 @@
+#This is required to work, jid and password of bot
+#Place a copy of this file in /main/resources and /test/resources
+bot.jid=
+bot.passwd=
+#Mongodb server
+db.server=
+#db.port
+
+#db.user=
+#db.passwd=

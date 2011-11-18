@@ -1,0 +1,3 @@
+[submodule "Barkety"]
+	path = Barkety
+	url = git@github.com:eiennohito/Barkety.git

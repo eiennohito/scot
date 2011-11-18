@@ -3,7 +3,7 @@ import Keys._
 
 object ScotDependencies {
   val commonsLang = "comons-lang" % "commons-lang" % "2.5"  
-  val barkety = "us.troutwine" %% "barkety" % "3.2.0"
+  //val barkety = "us.troutwine" %% "barkety" % "3.2.0"
   val scalaz = "org.scalaz" %% "scalaz-core" % "6.0.3"
   val scalatest = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
   
@@ -50,5 +50,10 @@ object ScotBuild extends Build {
     id = "scot-core",
     settings = buildSettings,
     base = file("core")
+  ) dependsOn (barkety)
+
+  lazy val barkety = Project(
+    id = "barkety",
+    base = file("Barkety")
   )
 }

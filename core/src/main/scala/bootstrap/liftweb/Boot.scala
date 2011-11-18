@@ -40,7 +40,7 @@ class Boot {
     //Schemifier.schemify(true, Schemifier.infoF _, User)
 
     // where to search snippet
-    LiftRules.addToPackages("org.eiennohito.yaih")
+    LiftRules.addToPackages("org.eiennohito.scot.web")
 
     // Build SiteMap
     def sitemap = SiteMap(
@@ -56,7 +56,7 @@ class Boot {
 
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
-    //LiftRules.setSiteMapFunc(() => sitemapMutators(sitemap))
+    LiftRules.setSiteMapFunc(() => sitemap)
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
