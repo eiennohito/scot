@@ -5,6 +5,7 @@ import java.util.Calendar
 
 import net.liftweb._
 import util.Helpers._
+import org.eiennohito.scot.model.UserInfo
 
 /**
  * @author eiennohito

@@ -10,20 +10,22 @@ import akka.stm.atomic
  */
 
 class RoomParticipantCache(roomName: String, server:String) {
+  import StmManager.readOnly
   private val cached = new TransactionalMap[String, Participant]
+
 
   def cache(p: Participant) {
     atomic {
-      cached += p.nick.value -> p
+      cached += p.nick.is -> p
     }
   }
 
   def lookup(name: String) : Option[Participant] = {
-    atomic { cached.get(name) }
+    atomic (readOnly) { cached.get(name) }
   }
 
   def isCached(name: String) = {
-    atomic { cached.get(name) } match {
+    atomic (readOnly) { cached.get(name) } match {
       case None => false
       case Some(_) => true
     }
