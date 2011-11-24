@@ -51,10 +51,16 @@ object ScotBuild extends Build {
     id = "scot-core",
     settings = buildSettings,
     base = file("core")
-  ) dependsOn (barkety)
+  ) dependsOn (barkety, pluginInterface)
 
   lazy val barkety = Project(
     id = "barkety",
     base = file("Barkety")
+  )
+  
+  lazy val pluginInterface = Project(
+    id="scot-plugin-interface",
+    base = file("plugin-interface"),
+    settings = buildSettings
   )
 }
