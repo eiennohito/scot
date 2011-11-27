@@ -5,8 +5,11 @@ package org.eiennohito.scot.info
  * @since 24.11.11 
  */
 
-case class ConferenceInfo(
-                           room: String,
-                           server: String,
-                           nickname: Option[String],
-                           password: Option[String]) {}
+case class ConferenceInfo(room: String, server: String) {}
+
+case class ConferenceLoginInfo (
+    room: String,
+    server: String, 
+    nickname: String,
+    password: Option[String]
+                                 )

@@ -29,12 +29,13 @@ class PresenceLoggerTest extends org.scalatest.FunSuite with org.scalatest.match
     val p = Participant.createRecord.save
     val pl = TestActorRef(new PresenceLogger {
       val resolver = new ParticipantResolver {
-        def resolve(mjid: MucJID, date: Date, messageHeader: MessageHeader) = p
+        def resolve(date: Date, messageHeader: MessageHeader) = p
       }
     }).start()
-    
-    pl ! Envelope[MucPresence](MessageHeader(new Date, null), 
-      MucPresence(MucJID("fl-talks", "c.j.r", "who"), Presence.Type.available, new Date))
+
+    val mjid: MucJID = MucJID("fl-talks", "c.j.r", "who")
+    pl ! Envelope[MucPresence](MessageHeader(new Date, null, mjid),
+      MucPresence(mjid, Presence.Type.available, new Date))
 
     expectNoMsg(10 millis)
 
@@ -43,8 +44,8 @@ class PresenceLoggerTest extends org.scalatest.FunSuite with org.scalatest.match
     b should not be Empty
     b.get.who.is should equal (p.id.is)
 
-    pl ! Envelope[MucPresence](MessageHeader(new Date, null),
-          MucPresence(MucJID("fl-talks", "c.j.r", "who"), Presence.Type.unavailable, new Date))
+    pl ! Envelope[MucPresence](MessageHeader(new Date, null, mjid),
+          MucPresence(mjid, Presence.Type.unavailable, new Date))
     expectNoMsg(10 millis)
     val b2 = OnlineTime.find(b.get.id.is)
     b2 should not be Empty

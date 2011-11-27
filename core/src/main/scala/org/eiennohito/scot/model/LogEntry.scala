@@ -12,15 +12,17 @@ import org.eiennohito.scot.services.DateService
  * @since 17.11.11 
  */
 
-class Message private() extends MongoRecord[Message] with LongPk[Message] {
-  def meta = Message
+class LogEntry private() extends MongoRecord[LogEntry] with LongPk[LogEntry] {
+  def meta = LogEntry
 
   object content extends StringField(this, 2500)
   object nick extends StringField(this, 250)
   object time extends DateField(this)
+  object conf extends LongField(this)
+  object who extends LongField(this)
 }
 
-object Message extends Message with MongoMetaRecord[Message] with NamedDatabase
+object LogEntry extends LogEntry with MongoMetaRecord[LogEntry] with NamedDatabase
 
 class Participant private() extends MongoRecord[Participant] with LongPk[Participant] {
   def meta = Participant

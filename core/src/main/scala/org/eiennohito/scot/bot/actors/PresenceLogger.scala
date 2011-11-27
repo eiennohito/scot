@@ -24,13 +24,13 @@ abstract class PresenceLogger extends Actor with Logging with ParticipantResolve
   implicit private val formats = DefaultFormats.lossless
 
   def somebodyLoggedIn(mjid: MucJID, date: Date, info: MessageHeader) {
-    val p = resolver.resolve(mjid, date, info)
+    val p = resolver.resolve(date, info)
     val ot = OnlineTime.createRecord
     ot.who(p.id.is).cameOnline(date).save
   }
 
   def somebodyLoggedOut(mjid: MucJID, date: Date, info: MessageHeader) {
-    val p = resolver.resolve(mjid, date, info)
+    val p = resolver.resolve(date, info)
     //OnlineTime where (_.who eqs id)
     val q = ("who" -> p.id.is) ~ ("wentOffline" -> json.JNull)
     OnlineTime.update(q, ("$set" -> ("wentOffline" -> date)))
@@ -40,8 +40,8 @@ abstract class PresenceLogger extends Actor with Logging with ParticipantResolve
     case e: Envelope[MucPresence] => {
       val m = e.msg
       m.status match {
-        case Type.available => somebodyLoggedIn(m.jid, m.time, e.info)
-        case Type.unavailable => somebodyLoggedOut(m.jid, m.time, e.info)
+        case Type.available => somebodyLoggedIn(m.mjid, m.time, e.info)
+        case Type.unavailable => somebodyLoggedOut(m.mjid, m.time, e.info)
         case _ => logger.info("invalid status %s".format(m.status))
       } 
     }

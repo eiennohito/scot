@@ -14,14 +14,11 @@ import us.troutwine.barkety.{JoinRoom, ChatSupervisor}
 object BotBootstrap {
 
   var chatsup : ActorRef = _
-  
-  
+
   def loginToRoom(name: String, user: String, password: Option[String] = None) = {
     val fut = chatsup ? JoinRoom(JID(name), Some(user), password)
     fut.as[ActorRef]
   }
-
-
 
   def launch() {
     val jid = JID(Props.get("bot.jid").get)

@@ -2,7 +2,6 @@ package org.eiennohito.scot.bot.muc
 
 import org.eiennohito.scot.bot.CoreActors
 import org.eiennohito.scot.messages.Message
-import org.eiennohito.scot.services.ParticipantService
 import org.eiennohito.scot.model.ConferenceEntry
 import us.troutwine.barkety.jid.{JID, MucJID}
 import akka.actor.{ActorRef, Actor}
@@ -11,44 +10,39 @@ import org.slf4j.LoggerFactory
 import com.weiglewilczek.slf4s.Logging
 import java.util.Date
 import org.eiennohito.scot.bot.message.{Envelope, MessageHeader}
+import org.eiennohito.scot.services.{ParticipantResolverPresent, ParticipantService}
+import org.eiennohito.scot.info.{ConferenceLoginInfo, ConferenceInfo}
+import net.liftweb.common.Full
 
 /**
  * @author eiennohito
  * @since 24.11.11 
  */
 
-class ConferenceListener(ca: CoreActors, ci: ConferenceEntry) extends Actor with Logging {
-  
-  val l = LoggerFactory.getLogger(classOf[ConferenceListener]) 
+abstract class ConferenceListener(ca: CoreActors, ci: ConferenceLoginInfo) extends Actor with Logging with ParticipantResolverPresent {
+  override def preStart() {
+    chatRoom ! RegisterParent(self)
+  }
+
+  val l = LoggerFactory.getLogger(classOf[ConferenceListener])
+  val info = ConferenceInfo(ci.room, ci.server)
   
   private val chatRoom = (ca.chatSupervisor ? JoinRoom(
-    JID(ci.conferenceName.is, ci.conferenceServer.is),  
-    ci.usingNick.valueBox,
-    ci.password.valueBox)).as[ActorRef].get
-  
-  chatRoom ! RegisterParent(self)
+      JID(ci.room, ci.server), Full(ci.nickname), ci.password))
+      .as[ActorRef].get
 
-  def locateInRoom(mjid: MucJID): Option[String] = {
-    val ui = (chatRoom ? UserInfoRequest(mjid)).as[ExtendedUserInfo]
-    ui flatMap  {u => u.jid.map(_.toString)}
-  }
 
-  def lookupJid(mjid: MucJID): Option[String] = {
-    ParticipantService.lookupUser(mjid) match {
-      case Some(x) => Some(x.jid.is)
-      case None => locateInRoom(mjid)
-    }
-  }
+  def header(mjid: MucJID) = MessageHeader(
+          new Date,
+          self,
+          mjid
+        )
+
 
   def processRawMessage(m: MucMessage): Envelope[Message] = {
     Envelope[Message](
-      MessageHeader(
-        new Date,
-        self
-      ),
+      header(m.mjid),
       Message(
-        m.jid.nickname,
-        lookupJid(m.jid),
         m.time,
         m.msg
       )
@@ -60,8 +54,10 @@ class ConferenceListener(ca: CoreActors, ci: ConferenceEntry) extends Actor with
       ca.mainRouter ! processRawMessage(msg)
     }
     case p: MucPresence => {
-      ca.presenceLogger ! Envelope[MucPresence](MessageHeader(new Date, self), p)
+      ca.presenceLogger ! Envelope[MucPresence](header(p.mjid), p)
     }
+    case s: String => chatRoom ! s
+    case ui: UserInfoRequest => chatRoom ! ui
   }
 }
 

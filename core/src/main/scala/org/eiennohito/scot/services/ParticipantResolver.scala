@@ -7,7 +7,6 @@ import us.troutwine.barkety.jid.{JID, MucJID}
 import java.lang.String
 import net.liftweb.mongodb.BsonDSL._
 import org.eiennohito.scot.model.{ChangeNickEvent, Participant}
-import org.eiennohito.scot.info.ConferenceInfo
 
 /**
  * @author eiennohito
@@ -23,7 +22,7 @@ trait MongoParticipantResolverPresent extends ParticipantResolverPresent {
 }
 
 trait ParticipantResolver {
-  def resolve(mjid: MucJID, date: Date, messageHeader: MessageHeader) : Participant
+  def resolve(date: Date, messageHeader: MessageHeader) : Participant
 }
 
 trait MongoParticipantResolver extends ParticipantResolver {
@@ -38,15 +37,13 @@ trait MongoParticipantResolver extends ParticipantResolver {
   }
 
   def lookup(jid: String): Option[Participant] = {    
-    Participant.find("jid" -> jid)
+    Participant.find("mjid" -> jid)
   }
 
   def register(jid: String, mjid: MucJID, date: Date): Participant = {
     val p = Participant.createRecord
       .jid(jid).nick(mjid.nickname)
-      .conf(
-        ConfigurationService.loadConferenceConfig(
-        ConferenceInfo(mjid.room, mjid.server, None, None)).id.is)
+      .conf(ConfigurationService.loadConferenceConfig(mjid).id.is)
     registerNickChange(p, mjid.nickname, date)
     p
   }
@@ -67,11 +64,12 @@ trait MongoParticipantResolver extends ParticipantResolver {
     participant.nick(newNick).save
   }
 
-  def resolve(mjid: MucJID, date: Date, messageHeader: MessageHeader) = {
+  def resolve(date: Date, hdr: MessageHeader) = {
+    val mjid = hdr.mjid
     ParticipantService.lookupUser(mjid) match {
       case Some(x) => x
       case None => {
-        val ui = (messageHeader.confProcessor ? UserInfoRequest(mjid)).as[ExtendedUserInfo]
+        val ui = (hdr.confProcessor ? UserInfoRequest(mjid)).as[ExtendedUserInfo]
         val p_box = ui flatMap (_.jid) flatMap (lookupParticipant(_, mjid, date))
         val p = p_box getOrElse participantByMjid (mjid, date)
         

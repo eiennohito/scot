@@ -3,6 +3,7 @@ package org.eiennohito.scot.services
 import org.eiennohito.scot.model.ConferenceEntry
 import org.eiennohito.scot.info.ConferenceInfo
 import net.liftweb.mongodb.BsonDSL._
+import us.troutwine.barkety.jid.MucJID
 
 /**
  * @author eiennohito
@@ -10,6 +11,11 @@ import net.liftweb.mongodb.BsonDSL._
  */
 
 object ConfigurationService {
+
+  def loadConferenceConfig(mjid: MucJID): ConferenceEntry =
+    loadConferenceConfig(
+      ConferenceInfo(mjid.room, mjid.server)
+    )
   
   def loadConferenceConfig(ci: ConferenceInfo): ConferenceEntry = {
     ConferenceEntry.find(("conferenceName" -> ci.room) ~ ("conferenceServer" -> ci.server)).openTheBox
