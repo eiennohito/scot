@@ -1,9 +1,13 @@
 package org.eiennohito.scot.services
 
-import us.troutwine.barkety.jid.MucJID
 import java.util.Date
 import org.eiennohito.scot.bot.message.MessageHeader
-import org.eiennohito.scot.model.Participant
+import us.troutwine.barkety.{ExtendedUserInfo, UserInfoRequest}
+import us.troutwine.barkety.jid.{JID, MucJID}
+import java.lang.String
+import net.liftweb.mongodb.BsonDSL._
+import org.eiennohito.scot.model.{ChangeNickEvent, Participant}
+import org.eiennohito.scot.info.ConferenceInfo
 
 /**
  * @author eiennohito
@@ -23,7 +27,59 @@ trait ParticipantResolver {
 }
 
 trait MongoParticipantResolver extends ParticipantResolver {
+
+  def participantByMjid(mjid: MucJID, date: Date): Participant = {
+    lookup(mjid.toString) match {
+      case Some(x) => x
+      case None => {
+        register(mjid.toString, mjid, date)
+      }
+    }
+  }
+
+  def lookup(jid: String): Option[Participant] = {    
+    Participant.find("jid" -> jid)
+  }
+
+  def register(jid: String, mjid: MucJID, date: Date): Participant = {
+    val p = Participant.createRecord
+      .jid(jid).nick(mjid.nickname)
+      .conf(
+        ConfigurationService.loadConferenceConfig(
+        ConferenceInfo(mjid.room, mjid.server, None, None)).id.is)
+    registerNickChange(p, mjid.nickname, date)
+    p
+  }
+
+  def lookupParticipant(jid: JID, mjid: MucJID, date: Date): Option[Participant] = {
+    lookup(jid.toString) match {
+      case x : Some[Participant] => x
+      case None => {
+        Some(register(jid.toString, mjid, date))
+      }
+    }    
+  }
+
+  def registerNickChange(participant: Participant, newNick: String, date: Date) {
+    val old = participant.nick.is
+    ChangeNickEvent.createRecord
+      .from(old).to(newNick).who(participant.id.is).when(date).save
+    participant.nick(newNick).save
+  }
+
   def resolve(mjid: MucJID, date: Date, messageHeader: MessageHeader) = {
-    null
+    ParticipantService.lookupUser(mjid) match {
+      case Some(x) => x
+      case None => {
+        val ui = (messageHeader.confProcessor ? UserInfoRequest(mjid)).as[ExtendedUserInfo]
+        val p_box = ui flatMap (_.jid) flatMap (lookupParticipant(_, mjid, date))
+        val p = p_box getOrElse participantByMjid (mjid, date)
+        
+        if (p.nick.is ne mjid.nickname) {
+          registerNickChange(p, mjid.nickname, date)
+        }
+        p
+      }
+    }
   }
 }
