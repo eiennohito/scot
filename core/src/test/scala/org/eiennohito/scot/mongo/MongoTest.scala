@@ -7,6 +7,7 @@ import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.record.field._
 import com.mongodb._
 import net.liftweb.mongodb.record.field.{LongPk, ObjectIdPk}
+import org.eiennohito.scot.bot.logging.PresenceLogger
 
 /**
  * @author eiennohito

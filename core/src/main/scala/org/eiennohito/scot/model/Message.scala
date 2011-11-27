@@ -4,6 +4,8 @@ import org.eiennohito.scot.db.NamedDatabase
 import net.liftweb.mongodb.record.field.{DateField, LongPk}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
 import net.liftweb.record.field.{LongField, StringField}
+import java.util.Date
+import org.eiennohito.scot.services.DateService
 
 /**
  * @author eiennohito
@@ -48,7 +50,9 @@ class OnlineTime private() extends MongoRecord[OnlineTime] with LongPk[OnlineTim
 
   object who extends LongField(this)
   object cameOnline extends DateField(this)
-  object wentOffline extends DateField(this)
+  object wentOffline extends DateField(this) {
+    override def optional_? = true
+  }
 }
 
 object OnlineTime extends OnlineTime with MongoMetaRecord[OnlineTime] with NamedDatabase

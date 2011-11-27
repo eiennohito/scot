@@ -3,6 +3,8 @@ package org.eiennohito.scot.services
 import akka.stm.TransactionalMap
 import akka.stm.atomic
 import org.eiennohito.scot.model.{Participant, UserInfo}
+import org.eiennohito.scot.info.ConferenceInfo
+import us.troutwine.barkety.jid.MucJID
 
 /**
  * @author eiennohito
@@ -12,7 +14,7 @@ import org.eiennohito.scot.model.{Participant, UserInfo}
 object ParticipantService {
   private val cached = TransactionalMap[String, RoomParticipantCache]
 
-  def lookupUser(nick: String, room: String) : Option[UserInfo] = {
+  def lookupUser(mjid: MucJID) : Option[Participant] = {
     None
   }
 

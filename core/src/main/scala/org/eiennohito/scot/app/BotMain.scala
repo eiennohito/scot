@@ -3,6 +3,7 @@ package org.eiennohito.scot.app
 import us.troutwine.barkety._
 import akka.actor.{ActorRef, Actor}
 import Actor.actorOf
+import org.eiennohito.scot.bot.BotBootstrap
 
 
 /**
@@ -32,5 +33,10 @@ object BotMain extends App {
       case None =>
     }
 */
+    BotBootstrap.launch()
+    val room = BotBootstrap.loginToRoom("bot_test3@conference.jabber.ru", "test-bot")
+    val acty = actorOf(new Acty(room.get)).start()
+    room ! "hello, my name is bot, i'm testing sending messages to MUC"
+    System.in.read()
   }
 }

@@ -2,8 +2,9 @@ package org.eiennohito.scot.bot
 
 import net.liftweb.util.Props
 import akka.actor.Actor._
-import us.troutwine.barkety.{JID, ChatSupervisor}
 import akka.actor.ActorRef
+import us.troutwine.barkety.jid.JID
+import us.troutwine.barkety.{JoinRoom, ChatSupervisor}
 
 /**
  * @author eiennohito
@@ -13,6 +14,12 @@ import akka.actor.ActorRef
 object BotBootstrap {
 
   var chatsup : ActorRef = _
+  
+  
+  def loginToRoom(name: String, user: String, password: Option[String] = None) = {
+    val fut = chatsup ? JoinRoom(JID(name), Some(user), password)
+    fut.as[ActorRef]
+  }
 
 
 
