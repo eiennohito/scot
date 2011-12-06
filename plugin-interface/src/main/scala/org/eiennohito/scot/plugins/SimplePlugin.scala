@@ -7,7 +7,7 @@ import org.eiennohito.scot.messages.Message
  * @since 24.11.11 
  */
 
-trait Plugin {
+trait SimplePlugin {
   def onStart() {}
 
   def onShutdown() {}

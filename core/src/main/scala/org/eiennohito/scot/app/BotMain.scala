@@ -3,7 +3,13 @@ package org.eiennohito.scot.app
 import us.troutwine.barkety._
 import akka.actor.{ActorRef, Actor}
 import Actor.actorOf
+import jid.JID
 import org.eiennohito.scot.bot.BotBootstrap
+import org.eiennohito.scot.services.ConfigurationService
+import org.eiennohito.scot.info.{ConferenceInfo, ConferenceLoginInfo}
+import org.eiennohito.scot.model.ConferenceEntry
+import net.liftweb.mongodb.BsonDSL._
+import org.eiennohito.scot.db.DbInitializer
 
 
 /**
@@ -18,25 +24,41 @@ class Acty(child:ActorRef) extends Actor {
   def receive = {
     case InboundMessage(msg:String) => println(msg)
   }
-
-
 }
 
 
+
 object BotMain extends App {
-  override def main(args: Array[String]) {
-/*
-    (chatsup ? CreateChat(JID(""))).as[ActorRef] match {
-      case Some(chatter) =>
-        actorOf(new Acty(chatter)).start
-        chatter ! OutboundMessage("Hi, you!")
-      case None =>
+  
+  def tryo[A](fnc: => A) : Option[A] = {
+    try {
+      Some(fnc)
+    } catch {
+      case _ => None
     }
-*/
+  }
+  
+  override def main(args: Array[String]) {
+    DbInitializer.init()
     BotBootstrap.launch()
-    val room = BotBootstrap.loginToRoom("bot_test3@conference.jabber.ru", "test-bot")
-    val acty = actorOf(new Acty(room.get)).start()
+    val ci = ConferenceLoginInfo("bot_test3", "conference.jabber.ru", "test-bot", None)
+    val l = tryo {
+      ConferenceEntry.findAll("room" -> "bot_test3")
+    } getOrElse Nil
+    if (l.size == 0) {
+      ConferenceEntry.createRecord
+        .room(ci.room)
+        .server(ci.server)
+        .usingNick(ci.nickname)
+        .password(ci.password)
+        .save
+    }
+    val room = BotBootstrap.loginToRoom(ci)
+    val acty = actorOf(new Acty(room)).start()
     room ! "hello, my name is bot, i'm testing sending messages to MUC"
+
     System.in.read()
+    BotBootstrap.stop()
+    acty.stop()
   }
 }

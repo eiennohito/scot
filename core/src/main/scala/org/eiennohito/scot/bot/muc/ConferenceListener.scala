@@ -2,16 +2,14 @@ package org.eiennohito.scot.bot.muc
 
 import org.eiennohito.scot.bot.CoreActors
 import org.eiennohito.scot.messages.Message
-import org.eiennohito.scot.model.ConferenceEntry
 import us.troutwine.barkety.jid.{JID, MucJID}
 import akka.actor.{ActorRef, Actor}
 import us.troutwine.barkety._
-import org.slf4j.LoggerFactory
 import com.weiglewilczek.slf4s.Logging
 import java.util.Date
 import org.eiennohito.scot.bot.message.{Envelope, MessageHeader}
-import org.eiennohito.scot.services.{ParticipantResolverPresent, ParticipantService}
-import org.eiennohito.scot.info.{ConferenceLoginInfo, ConferenceInfo}
+import org.eiennohito.scot.services.ParticipantResolverPresent
+import org.eiennohito.scot.info.ConferenceLoginInfo
 import net.liftweb.common.Full
 
 /**
@@ -20,13 +18,13 @@ import net.liftweb.common.Full
  */
 
 abstract class ConferenceListener(ca: CoreActors, ci: ConferenceLoginInfo) extends Actor with Logging with ParticipantResolverPresent {
+
+  self.id = "ConfList:" + ci
+
   override def preStart() {
     chatRoom ! RegisterParent(self)
   }
 
-  val l = LoggerFactory.getLogger(classOf[ConferenceListener])
-  val info = ConferenceInfo(ci.room, ci.server)
-  
   private val chatRoom = (ca.chatSupervisor ? JoinRoom(
       JID(ci.room, ci.server), Full(ci.nickname), ci.password))
       .as[ActorRef].get
@@ -57,7 +55,9 @@ abstract class ConferenceListener(ca: CoreActors, ci: ConferenceLoginInfo) exten
       ca.presenceLogger ! Envelope[MucPresence](header(p.mjid), p)
     }
     case s: String => chatRoom ! s
-    case ui: UserInfoRequest => chatRoom ! ui
+    case ui: UserInfoRequest => chatRoom forward ui
   }
+
+
 }
 

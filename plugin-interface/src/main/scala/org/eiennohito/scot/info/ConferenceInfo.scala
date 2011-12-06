@@ -9,7 +9,9 @@ case class ConferenceInfo(room: String, server: String) {}
 
 case class ConferenceLoginInfo (
     room: String,
-    server: String, 
+    server: String,
     nickname: String,
     password: Option[String]
-                                 )
+                                 ) {
+  def info = ConferenceInfo(room, server)
+}

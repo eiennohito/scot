@@ -13,13 +13,15 @@ import net.liftweb.record.field.{BooleanField, StringField}
 class ConferenceEntry private() extends MongoRecord[ConferenceEntry] with LongPk[ConferenceEntry] {
   def meta = ConferenceEntry
 
-  object conferenceName extends StringField(this, 250)
-  object conferenceServer extends StringField(this, 250)
+  object room extends StringField(this, 250)
+  object server extends StringField(this, 250)
   object usingNick extends StringField(this, 250)
   object password extends StringField(this, 250)
 }
 
-object ConferenceEntry extends ConferenceEntry with MongoMetaRecord[ConferenceEntry] with NamedDatabase
+object ConferenceEntry extends ConferenceEntry with MongoMetaRecord[ConferenceEntry] with NamedDatabase {
+  override def collectionName = "confentry"
+}
 
 
 class UserInfo private() extends MongoRecord[UserInfo] with LongPk[UserInfo] {

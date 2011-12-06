@@ -10,8 +10,14 @@ import net.liftweb.util.Props
  */
 
 object DbInitializer {
+
+  var inited = false
+
   def init() {
-    val sa = new ServerAddress(Props.get("db.server").get, Props.getInt("db.port", ServerAddress.defaultPort()))
-    MongoDB.defineDb(DbId, new Mongo(sa), Props.get("db.name").get)
+    if (!inited) {
+      val sa = new ServerAddress(Props.get("db.server").get, Props.getInt("db.port", ServerAddress.defaultPort()))
+      MongoDB.defineDb(DbId, new Mongo(sa), Props.get("db.name").get)
+      inited = true;
+    }
   }
 }

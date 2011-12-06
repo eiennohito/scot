@@ -69,7 +69,7 @@ trait MongoParticipantResolver extends ParticipantResolver {
     ParticipantService.lookupUser(mjid) match {
       case Some(x) => x
       case None => {
-        val ui = (hdr.confProcessor ? UserInfoRequest(mjid)).as[ExtendedUserInfo]
+        val ui = (hdr.confProcessor ? UserInfoRequest(mjid)).as[Option[ExtendedUserInfo]].getOrElse(None)
         val p_box = ui flatMap (_.jid) flatMap (lookupParticipant(_, mjid, date))
         val p = p_box getOrElse participantByMjid (mjid, date)
         

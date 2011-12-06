@@ -18,7 +18,7 @@ object ConfigurationService {
     )
   
   def loadConferenceConfig(ci: ConferenceInfo): ConferenceEntry = {
-    ConferenceEntry.find(("conferenceName" -> ci.room) ~ ("conferenceServer" -> ci.server)).openTheBox
+    ConferenceEntry.find(("room" -> ci.room) ~ ("server" -> ci.server)).openTheBox
   }
 
 }
