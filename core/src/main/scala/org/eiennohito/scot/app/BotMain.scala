@@ -3,10 +3,8 @@ package org.eiennohito.scot.app
 import us.troutwine.barkety._
 import akka.actor.{ActorRef, Actor}
 import Actor.actorOf
-import jid.JID
 import org.eiennohito.scot.bot.BotBootstrap
-import org.eiennohito.scot.services.ConfigurationService
-import org.eiennohito.scot.info.{ConferenceInfo, ConferenceLoginInfo}
+import org.eiennohito.scot.info.ConferenceLoginInfo
 import org.eiennohito.scot.model.ConferenceEntry
 import net.liftweb.mongodb.BsonDSL._
 import org.eiennohito.scot.db.DbInitializer

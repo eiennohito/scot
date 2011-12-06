@@ -1,7 +1,6 @@
 package org.eiennohito.scot.bot
 
 import logging.PresenceLogger
-import akka.actor.Actor._
 import message.{MessageHeader, Envelope}
 import us.troutwine.barkety.MucPresence
 import org.eiennohito.scot.services.ParticipantResolver
@@ -12,7 +11,7 @@ import org.eiennohito.scot.model.{OnlineTime, Participant}
 import net.liftweb.json.JsonDSL._
 import net.liftweb.common.Empty
 import org.scalatest.BeforeAndAfter
-import org.eiennohito.scot.mongo.TestDb
+import org.eiennohito.scot.mongo.SuiteWithDb
 import net.liftweb.json
 import akka.testkit.{TestKit, TestActorRef}
 import akka.util.duration._
@@ -22,8 +21,7 @@ import akka.util.duration._
  * @since 27.11.11 
  */
 
-class PresenceLoggerTest extends org.scalatest.FunSuite with org.scalatest.matchers.ShouldMatchers with BeforeAndAfter
-  with TestDb with TestKit {
+class PresenceLoggerTest extends SuiteWithDb with org.scalatest.matchers.ShouldMatchers with BeforeAndAfter with TestKit {
 
   test("presence logger logs ok") {
     val p = Participant.createRecord.save

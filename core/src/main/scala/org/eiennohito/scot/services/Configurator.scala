@@ -10,15 +10,24 @@ import us.troutwine.barkety.jid.MucJID
  * @since 27.11.11 
  */
 
-object ConfigurationService {
-
+trait Configurator {
   def loadConferenceConfig(mjid: MucJID): ConferenceEntry =
-    loadConferenceConfig(
-      ConferenceInfo(mjid.room, mjid.server)
-    )
-  
+      loadConferenceConfig(
+        ConferenceInfo(mjid.room, mjid.server)
+      )
+  def loadConferenceConfig(ci: ConferenceInfo): ConferenceEntry
+}
+
+trait MongoConfigurator extends Configurator {
   def loadConferenceConfig(ci: ConferenceInfo): ConferenceEntry = {
     ConferenceEntry.find(("room" -> ci.room) ~ ("server" -> ci.server)).openTheBox
   }
+}
 
+trait HasConfigurator {
+  val configurator: Configurator
+}
+
+trait HasMongoConfigurator { self : HasConfigurator =>
+  override val configurator = new MongoConfigurator {}
 }
