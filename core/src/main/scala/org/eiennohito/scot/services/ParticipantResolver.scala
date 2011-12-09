@@ -13,11 +13,11 @@ import org.eiennohito.scot.model.{ChangeNickEvent, Participant}
  * @since 27.11.11 
  */
 
-trait ParticipantResolverPresent {
+trait HasParticipantResolver {
   val resolver: ParticipantResolver
 }
 
-trait MongoParticipantResolverPresent extends ParticipantResolverPresent {
+trait HasMongoParticipantResolver extends HasParticipantResolver {
   override val resolver = new MongoParticipantResolver with HasMongoConfigurator {}
 }
 
@@ -52,10 +52,11 @@ trait MongoParticipantResolver extends ParticipantResolver with HasConfigurator 
   }
 
   def lookupParticipant(jid: JID, mjid: MucJID, date: Date): Option[Participant] = {
-    lookup(jid) match {
+    val jidString = jid.asString(false)
+    lookup(jidString) match {
       case x : Some[Participant] => x
       case None => {
-        Some(register(jid, mjid, date))
+        Some(register(jidString, mjid, date))
       }
     }    
   }

@@ -8,7 +8,7 @@ import us.troutwine.barkety._
 import com.weiglewilczek.slf4s.Logging
 import java.util.Date
 import org.eiennohito.scot.bot.message.{Envelope, MessageHeader}
-import org.eiennohito.scot.services.ParticipantResolverPresent
+import org.eiennohito.scot.services.HasParticipantResolver
 import org.eiennohito.scot.info.ConferenceLoginInfo
 import net.liftweb.common.Full
 
@@ -17,7 +17,7 @@ import net.liftweb.common.Full
  * @since 24.11.11 
  */
 
-abstract class ConferenceListener(ca: CoreActors, ci: ConferenceLoginInfo) extends Actor with Logging with ParticipantResolverPresent {
+abstract class ConferenceListener(ca: CoreActors, ci: ConferenceLoginInfo) extends Actor with Logging with HasParticipantResolver {
 
   self.id = "ConfList:" + ci
 

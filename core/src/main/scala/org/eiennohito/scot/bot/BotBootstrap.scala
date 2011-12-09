@@ -7,11 +7,12 @@ import akka.actor.Actor._
 import akka.actor.ActorRef
 import plugins.EchoPlugin
 import us.troutwine.barkety.jid.JID
-import us.troutwine.barkety.{JoinRoom, ChatSupervisor}
+import us.troutwine.barkety.ChatSupervisor
 import org.eiennohito.scot.plugins.SimplePlugin
-import org.eiennohito.scot.services.MongoParticipantResolverPresent
 import org.eiennohito.scot.bot.logging.{MessageLogger, PresenceLogger}
 import org.eiennohito.scot.info.{ConferenceLoginInfo, ConferenceInfo}
+import org.eiennohito.scot.services.{HasMongoConfigurator, HasMongoParticipantResolver}
+import org.eiennohito.scot.epwing.simple.EpwingPlugin
 
 /**
  * @author eiennohito
@@ -27,7 +28,7 @@ object BotBootstrap {
   val confs = new scala.collection.mutable.HashMap[ConferenceInfo, ActorRef]
 
   def loginToRoom(li: ConferenceLoginInfo) = {
-    val par = actorOf (new ConferenceListener(core.get, li) with MongoParticipantResolverPresent).start
+    val par = actorOf (new ConferenceListener(core.get, li) with HasMongoParticipantResolver).start
     confs += li.info -> par
     par
   }
@@ -38,6 +39,7 @@ object BotBootstrap {
 
   def registerCorePlugins() {
     registerPlugin(new EchoPlugin)
+    registerPlugin(new EpwingPlugin)
   }
 
   def launch() {
@@ -45,9 +47,9 @@ object BotBootstrap {
     val passwd = Props.get("bot.passwd").get
     core = Some(CoreActors(
       actorOf(new MainRouter(actorOf(
-        new MessageLogger with MongoParticipantResolverPresent
+        new MessageLogger with HasMongoParticipantResolver with HasMongoConfigurator
       ).start)),
-      actorOf(new PresenceLogger with MongoParticipantResolverPresent),
+      actorOf(new PresenceLogger with HasMongoParticipantResolver),
       actorOf(new ChatSupervisor(jid, passwd))
     ))
     core map {x => x.mainRouter :: x.presenceLogger :: x.chatSupervisor :: Nil} map { _.foreach(_.start()) }

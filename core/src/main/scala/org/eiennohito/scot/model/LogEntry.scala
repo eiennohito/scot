@@ -2,10 +2,8 @@ package org.eiennohito.scot.model
 
 import org.eiennohito.scot.db.NamedDatabase
 import net.liftweb.mongodb.record.field.{DateField, LongPk}
-import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
+import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.record.field.{LongField, StringField}
-import java.util.Date
-import org.eiennohito.scot.services.DateService
 
 /**
  * @author eiennohito

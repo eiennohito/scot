@@ -17,3 +17,7 @@ libraryDependencies += "com.foursquare" %% "rogue" % "1.0.28" intransitive()
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "0.9.28" % "runtime"
 
 libraryDependencies += "com.weiglewilczek.slf4s" %% "slf4s" % "1.0.7"
+
+resolvers += "eiennohito's repo" at "http://eiennohito.github.com/maven/"
+
+libraryDependencies += "fuku.eb4j" % "eb4j-tools" % "1.0.5"

@@ -10,7 +10,7 @@ import akka.config.Supervision.OneForOneStrategy
 import org.eiennohito.scot.bot.message.{Envelope, MessageHeader}
 import org.eiennohito.scot.model.OnlineTime
 import net.liftweb.mongodb.BsonDSL._
-import org.eiennohito.scot.services.ParticipantResolverPresent
+import org.eiennohito.scot.services.HasParticipantResolver
 import net.liftweb.json
 import json.DefaultFormats
 
@@ -19,7 +19,7 @@ import json.DefaultFormats
  * @since 26.11.11 
  */
 
-abstract class PresenceLogger extends Actor with Logging with ParticipantResolverPresent {
+abstract class PresenceLogger extends Actor with Logging with HasParticipantResolver {
   self.faultHandler = new OneForOneStrategy(List(classOf[Exception]))
   implicit private val formats = DefaultFormats.lossless
 
